@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSiTV Market Bot — Panel</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; color: #e8e6e1; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  .top-bar { height: 3px; background: linear-gradient(90deg, #b8a97e, #8c7a52, #b8a97e); }
+
+  header { padding: 24px 40px; display: flex; align-items: center; gap: 20px;
+           border-bottom: 1px solid #2a2a3a; }
+  header h1 { font-size: 26px; color: #b8a97e; }
+  header p  { font-size: 12px; color: #6b6880; margin-top: 2px; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84;
+              animation: pulse 1.5s infinite; margin-left: auto; }
+  .live-text { font-size: 12px; color: #3ddc84; margin-left: 6px; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 32px 40px 0; }
+  .stat-card { background: #13131a; border: 1px solid #2a2a3a; border-radius: 12px;
+               padding: 24px; position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0;
+                        height: 2px; background: #b8a97e; }
+  .stat-card .value { font-size: 36px; font-weight: 700; color: #b8a97e; font-family: 'Consolas', monospace; }
+  .stat-card .label { font-size: 12px; color: #6b6880; margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px 40px 40px; }
+
+  .card { background: #13131a; border: 1px solid #2a2a3a; border-radius: 12px; overflow: hidden; }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid #2a2a3a;
+                 display: flex; align-items: center; gap: 8px; }
+  .card-header h3 { font-size: 13px; font-weight: 600; color: #b8a97e; text-transform: uppercase; letter-spacing: 1px; }
+  .card-header span { font-size: 11px; color: #6b6880; margin-left: auto; }
+
+  .table { width: 100%; border-collapse: collapse; }
+  .table th { padding: 10px 16px; text-align: left; font-size: 10px; color: #6b6880;
+              text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #2a2a3a; }
+  .table td { padding: 11px 16px; font-size: 13px; border-bottom: 1px solid #1e1e28; }
+  .table tr:last-child td { border-bottom: none; }
+  .table tr:hover td { background: #1a1a24; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px;
+           font-size: 11px; font-weight: 600; }
+  .badge-green { background: #1a2e1a; color: #3ddc84; }
+  .badge-gold  { background: #2a2010; color: #b8a97e; }
+
+  .price { font-family: 'Consolas', monospace; color: #3ddc84; }
+  .time  { color: #6b6880; font-size: 11px; }
+  .username { color: #b8a97e; font-weight: 600; }
+
+  .empty { padding: 40px; text-align: center; color: #6b6880; font-size: 13px; }
+
+  footer { text-align: center; padding: 20px; color: #2a2a3a; font-size: 11px;
+           border-top: 1px solid #1a1a24; }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+
+<header>
+  <div>
+    <h1>Market Bot Panel</h1>
+    <p>by OSiTV</p>
+  </div>
+  <div class="live-dot"></div>
+  <span class="live-text">CANLI</span>
+</header>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="value" id="total-users">—</div>
+    <div class="label">Toplam Kullanıcı</div>
+  </div>
+  <div class="stat-card">
+    <div class="value" id="total-purchases">—</div>
+    <div class="label">Toplam Satın Alma</div>
+  </div>
+  <div class="stat-card">
+    <div class="value" id="total-spent">—</div>
+    <div class="label">Toplam Harcanan (Koen)</div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-header">
+      <h3>👥 Kullanıcılar</h3>
+      <span id="user-count">0 kişi</span>
+    </div>
+    <table class="table">
+      <thead><tr><th>#</th><th>Kullanıcı Adı</th><th>Katılım</th></tr></thead>
+      <tbody id="users-table"><tr><td colspan="3" class="empty">Henüz kullanıcı yok</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>🛒 Son Alımlar</h3>
+      <span id="purchase-count">0 alım</span>
+    </div>
+    <table class="table">
+      <thead><tr><th>Kullanıcı</th><th>Item</th><th>Fiyat</th><th>Zaman</th></tr></thead>
+      <tbody id="purchases-table"><tr><td colspan="4" class="empty">Henüz alım yok</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>OSiTV Market Bot Panel — Tüm hakları saklıdır</footer>
+
+<script>
+async function loadStats() {
+  try {
+    const res = await fetch('/api/stats');
+    const data = await res.json();
+
+    document.getElementById('total-users').textContent = data.total_users;
+    document.getElementById('total-purchases').textContent = data.total_purchases;
+    document.getElementById('total-spent').textContent = data.total_spent.toLocaleString('tr-TR');
+    document.getElementById('user-count').textContent = data.total_users + ' kişi';
+    document.getElementById('purchase-count').textContent = data.total_purchases + ' alım';
+
+    // Users
+    const ut = document.getElementById('users-table');
+    if (data.users.length === 0) {
+      ut.innerHTML = '<tr><td colspan="3" class="empty">Henüz kullanıcı yok</td></tr>';
+    } else {
+      ut.innerHTML = data.users.slice().reverse().map((u, i) =>
+        `<tr>
+          <td><span class="badge badge-gold">${data.users.length - i}</span></td>
+          <td><span class="username">${u.name}</span></td>
+          <td><span class="time">${u.joined}</span></td>
+        </tr>`).join('');
+    }
+
+    // Purchases
+    const pt = document.getElementById('purchases-table');
+    if (data.purchases.length === 0) {
+      pt.innerHTML = '<tr><td colspan="4" class="empty">Henüz alım yok</td></tr>';
+    } else {
+      pt.innerHTML = data.purchases.slice().reverse().slice(0, 20).map(p =>
+        `<tr>
+          <td><span class="username">${p.username}</span></td>
+          <td><span class="badge badge-green">${p.item}</span></td>
+          <td><span class="price">${(p.price||0).toLocaleString('tr-TR')}</span></td>
+          <td><span class="time">${p.time}</span></td>
+        </tr>`).join('');
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+loadStats();
+setInterval(loadStats, 10000); // Her 10 saniyede güncelle
+</script>
+</body>
+</html>
