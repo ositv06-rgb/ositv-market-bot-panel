@@ -9,7 +9,7 @@ CORS(app)
 app.secret_key = "ositv_secret_2026"
 
 DATA_FILE  = "data.json"
-ADMIN_PASS = "ositv2026"  # Bunu değiştir!
+ADMIN_PASS = "Eftal123"  # Bunu değiştir!
 
 def load_data():
     if not os.path.exists(DATA_FILE):
